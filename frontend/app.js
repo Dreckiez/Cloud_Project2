@@ -1,4 +1,4 @@
-// DOM Elements
+
 const taskForm = document.getElementById('task-form');
 const tasksContainer = document.getElementById('tasks-container');
 const filterPriority = document.getElementById('filter-priority');
@@ -7,11 +7,12 @@ const clearFiltersBtn = document.getElementById('clear-filters');
 const activeTasksContainer = document.getElementById('active-tasks-container');
 const completedTasksContainer = document.getElementById('completed-tasks-container');
 const completedCount = document.getElementById('completed-count');
+const modal = document.getElementById('task-modal');
+const openModalBtn = document.getElementById('open-modal-btn');
+const closeModalBtn = document.getElementById('close-modal-btn');
 
-// API Base URL (You will replace this with your API Gateway URL later)
-const API_URL = 'YOUR_API_GATEWAY_URL_HERE/tasks'; 
+const API_URL = 'http://localhost:3000/tasks'; 
 
-// Temporary local state to handle filtering
 let tasks = [];
 
 // --- Event Listeners ---
@@ -22,17 +23,12 @@ clearFiltersBtn.addEventListener('click', clearFilters);
 
 
 // --- Modal Elements & Logic ---
-const modal = document.getElementById('task-modal');
-const openModalBtn = document.getElementById('open-modal-btn');
-const closeModalBtn = document.getElementById('close-modal-btn');
-
 openModalBtn.addEventListener('click', () => {
     modal.classList.add('show');
 });
 
 closeModalBtn.addEventListener('click', closeModal);
 
-// Close if user clicks outside the modal content
 window.addEventListener('click', (e) => {
     if (e.target === modal) {
         closeModal();
@@ -41,22 +37,14 @@ window.addEventListener('click', (e) => {
 
 function closeModal() {
     modal.classList.remove('show');
-    taskForm.reset(); // Optional: clears form when closed
+    taskForm.reset();
 }
-
-// --- CRUD Operations ---
 
 // READ: Fetch all tasks
 async function fetchTasks() {
     try {
-        // const response = await fetch(API_URL);
-        // tasks = await response.json();
-        
-        // Mock data for local testing before API is ready
-        tasks = [
-            { taskId: '1', title: 'Setup AWS VPC', description: 'Create custom VPC and subnets', priority: 'high', dueDate: '2026-05-01', status: 'pending' },
-            { taskId: '2', title: 'Write IAM Roles', description: 'Configure least privilege policies', priority: 'medium', dueDate: '2026-05-02', status: 'done' }
-        ];
+        const response = await fetch(API_URL);
+        tasks = await response.json();
         renderTasks();
     } catch (error) {
         console.error('Error fetching tasks:', error);
@@ -72,21 +60,19 @@ async function handleCreateTask(e) {
         description: document.getElementById('description').value,
         priority: document.getElementById('priority').value,
         dueDate: document.getElementById('dueDate').value,
-        status: 'pending' // Default status
+        status: 'pending'
     };
 
     try {
-        /* Uncomment when API is ready
         await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newTask)
         });
-        */
-        console.log('Task Created:', newTask);
+       
         taskForm.reset();
         closeModal();
-        fetchTasks(); // Refresh list
+        fetchTasks();
     } catch (error) {
         console.error('Error creating task:', error);
     }
@@ -95,14 +81,12 @@ async function handleCreateTask(e) {
 // UPDATE: Change task status or details
 async function updateTask(taskId, updatedData) {
     try {
-        /* Uncomment when API is ready
         await fetch(`${API_URL}/${taskId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedData)
         });
-        */
-        console.log(`Task ${taskId} updated`);
+       
         fetchTasks();
     } catch (error) {
         console.error('Error updating task:', error);
@@ -114,12 +98,10 @@ async function deleteTask(taskId) {
     if (!confirm('Are you sure you want to delete this task?')) return;
     
     try {
-        /* Uncomment when API is ready
         await fetch(`${API_URL}/${taskId}`, {
             method: 'DELETE'
         });
-        */
-        console.log(`Task ${taskId} deleted`);
+       
         fetchTasks();
     } catch (error) {
         console.error('Error deleting task:', error);
@@ -135,7 +117,7 @@ function renderTasks() {
     
     let doneCounter = 0;
 
-    // Apply Filters (Keep your existing filter logic here)
+    // Apply Filters
     const priorityFilter = filterPriority.value;
     const dateFilter = filterDate.value;
     
@@ -189,5 +171,4 @@ function clearFilters() {
     renderTasks();
 }
 
-// Initial load
 fetchTasks();
