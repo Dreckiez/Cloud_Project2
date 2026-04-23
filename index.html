@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serverless Task Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Tasks</h1>
+            <button id="open-modal-btn" class="btn btn-primary">+ New Task</button>
+        </header>
+
+        <section class="filters-section card">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="filter-priority">Priority:</label>
+                    <select id="filter-priority">
+                        <option value="all">All</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filter-date">Due Date:</label>
+                    <input type="date" id="filter-date">
+                </div>
+                <div class="form-group flex-end">
+                    <button id="clear-filters" class="btn btn-secondary">Clear Filters</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="task-list">
+            <h2>Active Tasks</h2>
+            <div id="active-tasks-container">
+            </div>
+
+            <details class="completed-section">
+                <summary>
+                    <h2>Completed Tasks (<span id="completed-count">0</span>)</h2>
+                </summary>
+                <div id="completed-tasks-container">
+                </div>
+            </details>
+        </section>
+    </div>
+
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Task</h2>
+                <span class="close-btn" id="close-modal-btn">&times;</span>
+            </div>
+            <form id="task-form">
+                <div class="form-group">
+                    <input type="text" id="title" placeholder="Task Title" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="description" placeholder="Task Description"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="priority">Priority</label>
+                        <select id="priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Due Date</label>
+                        <input type="date" id="dueDate" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
