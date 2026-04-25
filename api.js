@@ -1,5 +1,5 @@
 // api.js
-const API_URL = 'YOUR_API_GATEWAY_URL_HERE/tasks';
+const API_URL = 'https://055owo68l2.execute-api.ap-southeast-2.amazonaws.com/prod/tasks';
 
 export const api = {
     async fetchTasks() {
