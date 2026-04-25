@@ -1,4 +1,6 @@
 
+import { taskService } from "./service.js";
+
 const taskForm = document.getElementById('task-form');
 const tasksContainer = document.getElementById('tasks-container');
 const filterPriority = document.getElementById('filter-priority');
@@ -10,10 +12,6 @@ const completedCount = document.getElementById('completed-count');
 const modal = document.getElementById('task-modal');
 const openModalBtn = document.getElementById('open-modal-btn');
 const closeModalBtn = document.getElementById('close-modal-btn');
-
-const API_URL = 'http://localhost:3000/tasks'; 
-
-let tasks = [];
 
 // --- Event Listeners ---
 taskForm.addEventListener('submit', handleCreateTask);
@@ -40,15 +38,9 @@ function closeModal() {
     taskForm.reset();
 }
 
-// READ: Fetch all tasks
-async function fetchTasks() {
-    try {
-        const response = await fetch(API_URL);
-        tasks = await response.json();
-        renderTasks();
-    } catch (error) {
-        console.error('Error fetching tasks:', error);
-    }
+async function initApp() {
+    await taskService.loadTasks();
+    renderTasks();
 }
 
 // CREATE: Add a new task
@@ -63,50 +55,22 @@ async function handleCreateTask(e) {
         status: 'pending'
     };
 
-    try {
-        await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newTask)
-        });
-       
-        taskForm.reset();
-        closeModal();
-        fetchTasks();
-    } catch (error) {
-        console.error('Error creating task:', error);
-    }
+    await taskService.addTask(newTask);
+    taskForm.reset();
+    closeModal();
+    renderTasks();
 }
 
-// UPDATE: Change task status or details
-async function updateTask(taskId, updatedData) {
-    try {
-        await fetch(`${API_URL}/${taskId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedData)
-        });
-       
-        fetchTasks();
-    } catch (error) {
-        console.error('Error updating task:', error);
-    }
-}
+window.updateTask = async (taskId, currentStatus) => {
+    await taskService.toggleTaskStatus(taskId, currentStatus);
+    renderTasks();
+};
 
-// DELETE: Remove a task
-async function deleteTask(taskId) {
+window.deleteTask = async (taskId) => {
     if (!confirm('Are you sure you want to delete this task?')) return;
-    
-    try {
-        await fetch(`${API_URL}/${taskId}`, {
-            method: 'DELETE'
-        });
-       
-        fetchTasks();
-    } catch (error) {
-        console.error('Error deleting task:', error);
-    }
-}
+    await taskService.removeTask(taskId);
+    renderTasks();
+};
 
 // --- UI Rendering & Filtering ---
 
@@ -115,17 +79,8 @@ function renderTasks() {
     activeTasksContainer.innerHTML = ''; 
     completedTasksContainer.innerHTML = '';
     
+    const filteredTasks = taskService.getFilteredTasks(filterPriority.value, filterDate.value);
     let doneCounter = 0;
-
-    // Apply Filters
-    const priorityFilter = filterPriority.value;
-    const dateFilter = filterDate.value;
-    
-    const filteredTasks = tasks.filter(task => {
-        const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
-        const matchesDate = !dateFilter || task.dueDate === dateFilter;
-        return matchesPriority && matchesDate;
-    });
 
     if (filteredTasks.length === 0) {
         activeTasksContainer.innerHTML = '<p>No tasks found.</p>';
@@ -145,7 +100,7 @@ function renderTasks() {
                 <small>Due: ${task.dueDate}</small>
             </div>
             <div class="task-actions">
-                <button class="btn btn-secondary" onclick="updateTask('${task.taskId}', {status: '${task.status === 'pending' ? 'done' : 'pending'}'})">
+                <button class="btn btn-secondary" onclick="updateTask('${task.taskId}', '${task.status}')">
                     ${task.status === 'pending' ? 'Mark Done' : 'Undo'}
                 </button>
                 <button class="btn btn-danger" onclick="deleteTask('${task.taskId}')">Delete</button>
@@ -171,4 +126,4 @@ function clearFilters() {
     renderTasks();
 }
 
-fetchTasks();
+initApp();
