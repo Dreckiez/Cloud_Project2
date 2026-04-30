@@ -8,7 +8,7 @@ A fully serverless, zero-cost web application built with a native AWS backend an
 - **Database:** Amazon DynamoDB
 - **Hosting & CDN:** Amazon S3 + Amazon CloudFront (with OAC)
 
-## 💻 How to Run Locally
+## How to Run Locally
 Because the production architecture relies on managed cloud services, local development uses a custom vanilla Node.js mock server with an in-memory array to simulate the API and database.
 
 **1. Start the Mock Backend** <br>
@@ -30,7 +30,7 @@ Since the frontend uses ES6 modules, open the project in Visual Studio Code and 
 **3. View the App** <br>
 Your browser will automatically open (typically to `http://127.0.0.1:5500`). The frontend will now communicate seamlessly with the local Node.js backend.
 
-## ☁️ How to Deploy to AWS <br>
+## How to Deploy to AWS <br>
 This project is deployed entirely via the AWS Management Console. Follow these steps to replicate the infrastructure.
 
 **Phase 1: Database (Amazon DynamoDB)** <br>
